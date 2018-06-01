@@ -2,15 +2,10 @@ package com.nahoonzzang.tobyspring;
 
 import java.sql.*;
 
-public class UserDao {
+public abstract class UserDao {
 
     public void add(User user) throws ClassNotFoundException, SQLException {
-        Class.forName("com.mysql.jdbc.Driver");
-        Connection connection = DriverManager.getConnection(
-                "jdbc:mysql://localhost/tobistudy",
-                "root",
-                "a10234"
-        );
+        Connection connection = getConnection();
 
         PreparedStatement preparedStatement= connection.prepareStatement(
                 "insert into users(id, name, password) values(?,?,?)");
@@ -26,11 +21,7 @@ public class UserDao {
 
     public User get(String id) throws ClassNotFoundException, SQLException {
         Class.forName("com.mysql.jdbc.Driver");
-        Connection connection = DriverManager.getConnection(
-                "jdbc:mysql://localhost/tobistudy",
-                "root",
-                "a10234"
-        );
+        Connection connection = getConnection();
 
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "select * from users where id = ?");
@@ -50,4 +41,5 @@ public class UserDao {
         return user;
     }
 
+    public abstract Connection getConnection() throws ClassNotFoundException, SQLException;
 }
