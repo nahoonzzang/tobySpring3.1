@@ -7,9 +7,7 @@ public class UserDaoTest {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
 
-        ConnectionMaker connectionMaker = new DConnectionMaker();
-
-        UserDao userDao = new UserDao(connectionMaker);
+        UserDao userDao = new DaoFactory().userDao();
 
         User user = new User();
         user.setId("0828namjin");
