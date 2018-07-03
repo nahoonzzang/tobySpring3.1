@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:util="http://www.springframework.org/schema/util"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+        <!-- @Bean-->
+        <!-- @Bean 두개 (userDao(), connectionMaker() 메서드)를 XML로 변환 -->
+        <bean id="dataSource"
+              class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
+            <property name="driverClass" value="com.mysql.jdbc.Driver"/>
+            <property name="url" value="jdbc:mysql://localhost/tobistudy"/>
+            <property name="username" value="root"/>
+            <property name="password" value="a10234"/>
+        </bean>
+
+        <bean id="userDao" class="com.nahoonzzang.tobyspring.UserDao">
+            <property name="dataSource" ref="dataSource"/> <!-- Bean 만들어 줘야 함 -->
+        </bean>
+</beans>

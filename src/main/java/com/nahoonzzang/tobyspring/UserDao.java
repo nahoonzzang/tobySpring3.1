@@ -1,16 +1,26 @@
 package com.nahoonzzang.tobyspring;
 
-import java.sql.*;
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 public class UserDao {
-    private ConnectionMaker connectionMaker;
+    private DataSource dataSource;
 
-    public UserDao(ConnectionMaker connectionMaker) {
-        this.connectionMaker = connectionMaker;
+    public UserDao() {}
+
+    public UserDao(DataSource dataSource) {
+        this.dataSource = dataSource;
+    }
+
+    public void setDataSource(DataSource dataSource) {
+        this.dataSource = dataSource;
     }
 
     public void add(User user) throws ClassNotFoundException, SQLException {
-        Connection connection = connectionMaker.makeConnection();
+        Connection connection = dataSource.getConnection();
 
         PreparedStatement preparedStatement= connection.prepareStatement(
                 "insert into users(id, name, password) values(?,?,?)");
@@ -25,7 +35,7 @@ public class UserDao {
     }
 
     public User get(String id) throws ClassNotFoundException, SQLException {
-        Connection connection = connectionMaker.makeConnection();;
+        Connection connection = dataSource.getConnection();
 
         PreparedStatement preparedStatement = connection.prepareStatement(
                 "select * from users where id = ?");
@@ -43,5 +53,24 @@ public class UserDao {
         connection.close();
 
         return user;
+    }
+
+    public void deleteAll() throws SQLException {
+        Connection connection = dataSource.getConnection();
+
+        PreparedStatement preparedStatement = connection.prepareStatement("delete from users");
+        preparedStatement.executeUpdate();
+
+        preparedStatement.close();
+        connection.close();
+    }
+
+    public int getCount() throws SQLException {
+        Connection connection = dataSource.getConnection();
+
+        PreparedStatement preparedStatement = connection.prepareStatement("select count(*) from users");
+
+        ResultSet resultSet = preparedStatement.executeQuery();
+
     }
 }
