@@ -1,5 +1,7 @@
 package com.nahoonzzang.tobyspring;
 
+import org.springframework.dao.EmptyResultDataAccessException;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -8,30 +10,31 @@ import java.sql.SQLException;
 
 public class UserDao {
     private DataSource dataSource;
+    private JdbcContext jdbcContext;
 
     public UserDao() {}
 
     public UserDao(DataSource dataSource) {
+        this.jdbcContext = new JdbcContext();
+        this.jdbcContext.setDataSource(dataSource);
+
         this.dataSource = dataSource;
     }
 
     public void setDataSource(DataSource dataSource) {
+        this.jdbcContext = new JdbcContext();
+        this.jdbcContext.setDataSource(dataSource);
+
         this.dataSource = dataSource;
     }
 
-    public void add(User user) throws ClassNotFoundException, SQLException {
-        Connection connection = dataSource.getConnection();
-
-        PreparedStatement preparedStatement= connection.prepareStatement(
-                "insert into users(id, name, password) values(?,?,?)");
-        preparedStatement.setString(1, user.getId());
-        preparedStatement.setString(2, user.getName());
-        preparedStatement.setString(3, user.getPassword());
-
-        preparedStatement.execute();
-
-        preparedStatement.close();
-        connection.close();
+    public void add(final User user) throws ClassNotFoundException, SQLException {
+        this.jdbcContext.excuteSqls(
+                "INSERT INTO users(id, name, password) values(?,?,?)",
+                user.getId(),
+                user.getName(),
+                user.getPassword()
+        );
     }
 
     public User get(String id) throws ClassNotFoundException, SQLException {
@@ -51,6 +54,8 @@ public class UserDao {
             user.setPassword(resultSet.getString("password"));
         }
 
+        if (user == null) throw new EmptyResultDataAccessException(1);
+
         resultSet.close();
         preparedStatement.close();
         connection.close();
@@ -59,35 +64,7 @@ public class UserDao {
     }
 
     public void deleteAll() throws SQLException {
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-
-        try {
-            connection = dataSource.getConnection();
-
-            preparedStatement = connection.prepareStatement("delete from users");
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            if (preparedStatement != null) {
-                try {
-                    preparedStatement.close();
-                } catch (SQLException e) {
-
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-
-                }
-            }
-        }
-
-        preparedStatement.close();
-        connection.close();
+        this.jdbcContext.executeSql("DELETE FROM users");
     }
 
     public int getCount() throws SQLException {

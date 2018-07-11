@@ -31,7 +31,7 @@ public class ApplicationTests {
 	@Before
 	public void setUp() {
 		DataSource dataSource = new SingleConnectionDataSource(
-						"jdbc:mysql://localhost/tobistudy",
+						"jdbc:mysql://localhost/testdb",
 						"root",
 						"a10234",
 						true);
@@ -51,7 +51,7 @@ public class ApplicationTests {
 		try{
 			userDao.add(user1);
 			userDao.add(user2);
-			assertThat(userDao.getCount(), is(0));
+			assertThat(userDao.getCount(), is(2));
 
 			User userget1 = userDao.get(user1.getId());
 			assertThat(userget1.getId(), is(user1.getId()));
@@ -89,7 +89,7 @@ public class ApplicationTests {
 	@Test(expected= EmptyResultDataAccessException.class)
 	public void getUserFailure() throws SQLException {
 		ApplicationContext applicationContext =
-						new ClassPathXmlApplicationContext("applicationContext.xml");
+						new ClassPathXmlApplicationContext("test-applicationContext.xml");
 
 		UserDao userDao = applicationContext.getBean("userDao", UserDao.class);
 		userDao.deleteAll();
