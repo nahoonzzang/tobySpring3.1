@@ -13,6 +13,7 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import javax.sql.DataSource;
 import java.sql.SQLException;
+import java.util.List;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertThat;
@@ -54,6 +55,8 @@ public class ApplicationTests {
 			assertThat(userDao.getCount(), is(2));
 
 			User userget1 = userDao.get(user1.getId());
+			System.out.println("user1.getId = " + user1.getId() + "\tuser1.getName = " + user1.getName() + "\tuser1.getPassword = " + user1.getPassword() + "\n");
+			System.out.println("userget1.getId = " + userget1.getId() + "\tuserget1.getName = " + userget1.getName() + "\tuserget1.getPassword = " + userget1.getPassword());
 			assertThat(userget1.getId(), is(user1.getId()));
 			assertThat(userget1.getPassword(), is(user1.getPassword()));
 
@@ -99,5 +102,42 @@ public class ApplicationTests {
 			userDao.get("unknown_id");
 		} catch (ClassNotFoundException cne) {
 		}
+	}
+
+	@Test
+	public void getAll() {
+		try {
+			userDao.deleteAll();
+
+			List<User> users0 = userDao.getAll();
+			assertThat(users0.size(), is(0));
+
+			userDao.add(user1);
+			List<User> users1 = userDao.getAll();
+			assertThat(users1.size(), is(1));
+			checkSameUser(user1, users1.get(0));
+
+			userDao.add(user2);
+			List<User> users2 = userDao.getAll();
+			assertThat(users2.size(), is(2));
+			checkSameUser(user1, users2.get(0));
+			checkSameUser(user2, users2.get(1));
+
+			userDao.add(user3);
+			List<User> users3 = userDao.getAll();
+			assertThat(users3.size(), is(3));
+			checkSameUser(user3, users3.get(0));
+			checkSameUser(user1, users3.get(1));
+			checkSameUser(user2, users3.get(2));
+
+		} catch (Exception e) {
+			System.out.println(e.getMessage());
+		}
+	}
+
+	private void checkSameUser(User user1, User user2) {
+		assertThat(user1.getId(), is(user2.getId()));
+		assertThat(user1.getName(), is(user2.getName()));
+		assertThat(user1.getPassword(), is(user2.getPassword()));
 	}
 }

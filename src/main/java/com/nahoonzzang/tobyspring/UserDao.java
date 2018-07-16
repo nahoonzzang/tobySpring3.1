@@ -1,106 +1,64 @@
 package com.nahoonzzang.tobyspring;
 
-import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class UserDao {
-    private DataSource dataSource;
-    private JdbcContext jdbcContext;
+    
+    private RowMapper<User> userMapper =
+            (resultSet, rowNum) -> {
+                User user = new User();
+                user.setId(resultSet.getString("id"));
+                user.setName(resultSet.getString("name"));
+                user.setPassword(resultSet.getString("password"));
+                return user;
+            };
+
+    private JdbcTemplate jdbcTemplate;
 
     public UserDao() {}
 
     public UserDao(DataSource dataSource) {
-        this.jdbcContext = new JdbcContext();
-        this.jdbcContext.setDataSource(dataSource);
-
-        this.dataSource = dataSource;
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
     public void setDataSource(DataSource dataSource) {
-        this.jdbcContext = new JdbcContext();
-        this.jdbcContext.setDataSource(dataSource);
-
-        this.dataSource = dataSource;
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
     public void add(final User user) throws ClassNotFoundException, SQLException {
-        this.jdbcContext.excuteSqls(
-                "INSERT INTO users(id, name, password) values(?,?,?)",
-                user.getId(),
-                user.getName(),
-                user.getPassword()
-        );
+        this.jdbcTemplate.update("INSERT INTO users(id, name, password) VALUES (?,?,?)",
+                user.getId(), user.getName(), user.getPassword());
     }
 
     public User get(String id) throws ClassNotFoundException, SQLException {
-        Connection connection = dataSource.getConnection();
-
-        PreparedStatement preparedStatement = connection.prepareStatement(
-                "select * from users where id = ?");
-        preparedStatement.setString(1, id);
-
-        ResultSet resultSet = preparedStatement.executeQuery();
-
-        User user = null;
-        if (resultSet.next()) {
-            user = new User();
-            user.setId(resultSet.getString("id"));
-            user.setName(resultSet.getString("name"));
-            user.setPassword(resultSet.getString("password"));
-        }
-
-        if (user == null) throw new EmptyResultDataAccessException(1);
-
-        resultSet.close();
-        preparedStatement.close();
-        connection.close();
-
-        return user;
+        return this.jdbcTemplate.queryForObject(
+            "SELECT * FROM users WHERE id = ?",
+            new Object[] {id},
+            this.userMapper);
     }
 
     public void deleteAll() throws SQLException {
-        this.jdbcContext.executeSql("DELETE FROM users");
+        this.jdbcTemplate.update(
+                connection -> connection.prepareStatement("DELETE FROM users"));
     }
 
     public int getCount() throws SQLException {
-        Connection connection = null;
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
+        return this.jdbcTemplate.queryForObject("SELECT count(*) FROM users", Integer.class);
+    }
 
-        try {
-            connection = dataSource.getConnection();
+    public List<User> getAll() {
+        return this.jdbcTemplate.query(
+                "SELECT * FROM users ORDER BY id",
+                this.userMapper);
 
-            preparedStatement = connection.prepareStatement("select count(*) from users");
+        int a = 0;
+        while (a -- > 1) {
 
-            resultSet = preparedStatement.executeQuery();
-            resultSet.next();
-            return resultSet.getInt(1);
-        } catch (SQLException e) {
-            throw e;
-        } finally {
-            if (resultSet != null) {
-                try {
-                    resultSet.close();
-                } catch (SQLException e) {
-                }
-            }
-            if (preparedStatement != null) {
-                try {
-                    preparedStatement.close();
-                } catch (SQLException e) {
-                }
-            }
-            if (connection != null) {
-                try {
-                    connection.close();
-                } catch (SQLException e) {
-                }
-            }
         }
     }
 }
