@@ -31,13 +31,7 @@ public class ApplicationTests {
 
 	@Before
 	public void setUp() {
-		DataSource dataSource = new SingleConnectionDataSource(
-						"jdbc:mysql://localhost/testdb",
-						"root",
-						"a10234",
-						true);
 
-		userDao.setDataSource(dataSource);
 		this.user1 = new User("gyumme", "박성철", "springno1");
 		this.user2 = new User("leegw700", "이길원", "springno2");
 		this.user3 = new User("bumjin", "박범진", "springno3");
@@ -63,10 +57,8 @@ public class ApplicationTests {
 			User userget2 = userDao.get(user2.getId());
 			assertThat(userget2.getId(), is(user2.getId()));
 			assertThat(userget2.getPassword(), is(user2.getPassword()));
-		} catch (SQLException sqlException) {
-			System.out.println("실패함");
-		} catch (ClassNotFoundException CNF) {
-			System.out.println("실패함");
+		} catch (Exception ex) {
+			System.out.println(ex.getMessage());
 		}
 	}
 
@@ -84,24 +76,23 @@ public class ApplicationTests {
 
 			userDao.add(user3);
 			assertThat(userDao.getCount(), is(3));
-		} catch(ClassNotFoundException cne) {
-			System.out.println(cne.getMessage());
+		} catch(Exception ex) {
+			System.out.println(ex.getMessage());
 		}
 	}
 
 	@Test(expected= EmptyResultDataAccessException.class)
-	public void getUserFailure() throws SQLException {
+	public void getUserFailure() {
 		ApplicationContext applicationContext =
-						new ClassPathXmlApplicationContext("test-applicationContext.xml");
+				new ClassPathXmlApplicationContext("test-applicationContext.xml");
 
 		UserDao userDao = applicationContext.getBean("userDao", UserDao.class);
+
 		userDao.deleteAll();
 		assertThat(userDao.getCount(), is(0));
 
-		try {
-			userDao.get("unknown_id");
-		} catch (ClassNotFoundException cne) {
-		}
+		userDao.get("unknown_id");
+
 	}
 
 	@Test
