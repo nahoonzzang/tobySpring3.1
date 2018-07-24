@@ -6,6 +6,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.dao.DataAccessException;
+import org.springframework.dao.DuplicateKeyException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
 import org.springframework.test.context.ContextConfiguration;
@@ -38,7 +40,7 @@ public class ApplicationTests {
 	}
 
 	@Test // JUnit에게 테스트용 메소드임을 알림
-	public void addAndGet() throws SQLException{ // JUnit
+	public void addAndGet() { // JUnit
 
 		userDao.deleteAll();
 		assertThat(userDao.getCount(), is(0));
@@ -63,7 +65,7 @@ public class ApplicationTests {
 	}
 
 	@Test
-	public void count() throws SQLException {
+	public void count() {
 		userDao.deleteAll();
 		assertThat(userDao.getCount(), is(0));
 
@@ -81,7 +83,7 @@ public class ApplicationTests {
 		}
 	}
 
-	@Test(expected= EmptyResultDataAccessException.class)
+	@Test(expected=EmptyResultDataAccessException.class)
 	public void getUserFailure() {
 		ApplicationContext applicationContext =
 				new ClassPathXmlApplicationContext("test-applicationContext.xml");
@@ -92,7 +94,14 @@ public class ApplicationTests {
 		assertThat(userDao.getCount(), is(0));
 
 		userDao.get("unknown_id");
+	}
 
+	@Test(expected= DuplicateKeyException.class)
+	public void duplicateKey() {
+		userDao.deleteAll();
+
+		userDao.add(user1);
+		userDao.add(user1);
 	}
 
 	@Test

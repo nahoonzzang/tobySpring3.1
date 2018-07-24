@@ -1,5 +1,6 @@
 package com.nahoonzzang.tobyspring;
 
+import org.springframework.dao.DataAccessException;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -29,13 +30,10 @@ public class UserDaoJdbc implements UserDao{
         this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
-    public void add(final User user) throws DuplicateUserIdException{
-        try {
-            this.jdbcTemplate.update("INSERT INTO users(id, name, password) VALUES (?,?,?)",
-                    user.getId(), user.getName(), user.getPassword());
-        } catch(DuplicateKeyException de) {
-            throw new DuplicateUserIdException(de);
-        }
+    public void add(final User user) throws DataAccessException{
+        this.jdbcTemplate.update("INSERT INTO users(id, name, password) VALUES (?,?,?)",
+                user.getId(), user.getName(), user.getPassword());
+
     }
 
     public User get(String id) {
