@@ -15,6 +15,10 @@ public class UserDaoJdbc implements UserDao{
                 user.setId(resultSet.getString("id"));
                 user.setName(resultSet.getString("name"));
                 user.setPassword(resultSet.getString("password"));
+                user.setLevel(Level.valueOf(resultSet.getInt("level")));
+                user.setLogin(resultSet.getInt("login"));
+                user.setRecommend(resultSet.getInt("recommend"));
+
                 return user;
             };
 
@@ -31,8 +35,10 @@ public class UserDaoJdbc implements UserDao{
     }
 
     public void add(final User user) throws DataAccessException{
-        this.jdbcTemplate.update("INSERT INTO users(id, name, password) VALUES (?,?,?)",
-                user.getId(), user.getName(), user.getPassword());
+        this.jdbcTemplate.update(
+            "INSERT INTO users(id, name, password, Level, Login, Recommend) VALUES (?,?,?,?,?,?)",
+                user.getId(), user.getName(), user.getPassword(),
+            user.getLevel().intValue(), user.getLogin(), user.getRecommend());
 
     }
 
