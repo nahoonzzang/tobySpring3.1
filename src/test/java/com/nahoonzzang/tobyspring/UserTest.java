@@ -15,16 +15,24 @@ public class UserTest {
     user = new User();
   }
 
-  @Test()
+  @Test
   public void upgradeLevel() {
     Level[] levels = Level.values();
     for(Level level : levels) {
       if (level.nextLevel() == null) continue;
       user.setLevel(level);
       user.upgradeLevel();
-      assertThat();
+      assertThat(user.getLevel(), is(level.nextLevel()));
     }
   }
 
-
+  @Test(expected = IllegalStateException.class)
+  public void cannotUpgradeLevel() {
+    Level[] levels = Level.values();
+    for(Level level : levels) {
+      if (level.nextLevel() != null) continue;
+      user.setLevel(level);
+      user.upgradeLevel();
+    }
+  }
 }

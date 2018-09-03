@@ -18,6 +18,7 @@ public class UserDaoJdbc implements UserDao {
         user.setLogin(resultSet.getInt("login"));
         user.setRecommend(resultSet.getInt("recommend"));
 
+        System.out.println("rowNum : " + rowNum);
         return user;
       };
 
