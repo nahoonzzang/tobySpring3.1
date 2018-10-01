@@ -17,6 +17,7 @@ public class UserDaoJdbc implements UserDao {
         user.setLevel(Level.valueOf(resultSet.getInt("level")));
         user.setLogin(resultSet.getInt("login"));
         user.setRecommend(resultSet.getInt("recommend"));
+        user.setEmail(resultSet.getString("email"));
 
         System.out.println("rowNum : " + rowNum);
         return user;
@@ -24,8 +25,7 @@ public class UserDaoJdbc implements UserDao {
 
   private JdbcTemplate jdbcTemplate;
 
-  public UserDaoJdbc() {
-  }
+  public UserDaoJdbc() {}
 
   public UserDaoJdbc(DataSource dataSource) {
     this.jdbcTemplate = new JdbcTemplate(dataSource);
@@ -37,9 +37,9 @@ public class UserDaoJdbc implements UserDao {
 
   public void add(final User user) throws DataAccessException {
     this.jdbcTemplate.update(
-        "INSERT INTO users(id, name, password, Level, Login, Recommend) VALUES (?,?,?,?,?,?)",
+        "INSERT INTO users(id, name, password, Level, Login, Recommend, email) VALUES (?,?,?,?,?,?,?)",
         user.getId(), user.getName(), user.getPassword(),
-        user.getLevel().intValue(), user.getLogin(), user.getRecommend());
+        user.getLevel().intValue(), user.getLogin(), user.getRecommend(), user.getEmail());
   }
 
   public User get(String id) {
@@ -62,9 +62,9 @@ public class UserDaoJdbc implements UserDao {
   public void update(User user) {
     this.jdbcTemplate.update(
         "UPDATE users set name = ?, password = ?, level = ?, login = ?, " +
-            "recommend = ? where id = ? ",
+            "recommend = ?, email = ? where id = ? ",
         user.getName(), user.getPassword(), user.getLevel().intValue(), user.getLogin(),
-        user.getRecommend(), user.getId());
+        user.getRecommend(), user.getEmail(), user.getId());
   }
 
   public List<User> getAll() {

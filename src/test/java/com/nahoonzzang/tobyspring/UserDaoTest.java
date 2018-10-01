@@ -29,9 +29,9 @@ public class UserDaoTest {
 	@Before
 	public void setUp() {
 
-		this.user1 = new User("gyumme", "박성철", "springno1", Level.BASIC, 1, 0);
-		this.user2 = new User("leegw700", "이길원", "springno2", Level.BASIC, 1, 0);
-		this.user3 = new User("bumjin", "박범진", "springno3", Level.BASIC, 1, 0);
+		this.user1 = new User("gyumme", "박성철", "springno1", Level.BASIC, 1, 0, "0828namjin@naver.com");
+		this.user2 = new User("leegw700", "이길원", "springno2", Level.BASIC, 1, 0, "0828namjin@naver.com");
+		this.user3 = new User("bumjin", "박범진", "springno3", Level.BASIC, 1, 0, "0828namjin@naver.com");
 	}
 
 	@Test // JUnit에게 테스트용 메소드임을 알림

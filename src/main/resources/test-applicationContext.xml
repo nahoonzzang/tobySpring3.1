@@ -3,9 +3,14 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-  <bean id="userService" class="com.nahoonzzang.tobyspring.UserService">
-    <property name="userDao" ref="userDao" />
+  <bean id="userService" class="com.nahoonzzang.tobyspring.UserServiceTx">
     <property name="transactionManager" ref="transactionManager"/>
+    <property name="userService" ref="userServiceImpl"/>
+  </bean>
+
+  <bean id="userServiceImpl" class="com.nahoonzzang.tobyspring.UserServiceImpl">
+    <property name="userDao" ref="userDao"/>
+    <property name="mailSender" ref="mailSender"/>
   </bean>
 
   <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager">
@@ -14,6 +19,9 @@
 
   <bean id="userDao" class="com.nahoonzzang.tobyspring.UserDaoJdbc">
     <property name="dataSource" ref="dataSource"/> <!-- Bean 만들어 줘야 함 -->
+  </bean>
+
+  <bean id="mailSender" class="com.nahoonzzang.tobyspring.DummyMailSender">
   </bean>
 
   <bean id="dataSource" class="org.springframework.jdbc.datasource.SimpleDriverDataSource">
