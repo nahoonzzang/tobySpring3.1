@@ -56,32 +56,31 @@ public class UserServiceTest {
   @Test
   @DirtiesContext // 컨텍스트의 DI 설정을 변경하는 테스트라는 것을 알려준다. mailSender 수동 DI
   public void upgradeLevels() throws Exception {
-    System.out.println("테스트 시작");
-    userDao.deleteAll();
-    int i = 0;
-    for(User user : users) {
-      i++;
-      System.out.println(i + "번째 user_" + "이름 : " + user.getName() + " 이메일 : " + user.getEmail());
-      userDao.add(user);
-    }
+    UserServiceImpl userServiceImpl = new UserServiceImpl(); // 고립된 테스트에서는 테스트 대상오브젝트를 직정 생성하면 됨
+
+    MockUserDao mockUserDao = new MockUserDao(this.users);
+    userServiceImpl.setUserDao(mockUserDao);
 
     MockMailSender mockMailSender = new MockMailSender();
     userServiceImpl.setMailSender(mockMailSender);
 
-    userService.upgradeLevels(); // 디비에 있는 유저 한번에 업뎃
+    userServiceImpl.upgradeLevels();
 
-    checkLevelUpgraded(users.get(0), false);
-    checkLevelUpgraded(users.get(1), true);
-    checkLevelUpgraded(users.get(2), false);
-    checkLevelUpgraded(users.get(3), true);
-    checkLevelUpgraded(users.get(4), false);
-
+    List<User> updated = mockUserDao.getUpdated(); // MockUserDao로부터 업데이트 결과를 가져온다
+    assertThat(updated.size(), is(2));
+    checkUserAndLevel(updated.get(0), "joytouch", Level.SILVER);
+    checkUserAndLevel(updated.get(1), "madnite1", Level.GOLD);
 
     // mock object 에 저장된 메일 수신자 목록을 가져와 업그레이드 대상과 일치하는지 확인한다.
     List<String> request = mockMailSender.getRequests();
     assertThat(request.size(), is(2));
     assertThat(request.get(0), is(users.get(1).getEmail()));
     assertThat(request.get(1), is(users.get(3).getEmail()));
+  }
+
+  private void checkUserAndLevel(User updated, String expectedId, Level expectedLevel) {
+    assertThat(updated.getId(), is(expectedId));
+    assertThat(updated.getLevel(), is(expectedLevel));
   }
 
   @Test
