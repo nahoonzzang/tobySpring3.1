@@ -4,11 +4,15 @@ import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+/**
+ * UserService 의 부가 기능 클래스
+ */
 public class UserServiceTx implements UserService {
   UserService userService;
   PlatformTransactionManager transactionManager;
 
-  public void setTransactionManager(PlatformTransactionManager transactionManager) {
+  public void setTransactionManager(
+      PlatformTransactionManager transactionManager) {
     this.transactionManager = transactionManager;
   }
 

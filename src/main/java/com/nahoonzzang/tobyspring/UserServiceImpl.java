@@ -3,10 +3,10 @@ package com.nahoonzzang.tobyspring;
 import java.util.List;
 import org.springframework.mail.MailSender;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionStatus;
-import org.springframework.transaction.support.DefaultTransactionDefinition;
 
+/**
+ * 트랜잭션 기능을 뺀 비지니스로직만 가지는 클래스 (UserService의 핵심 기능 클래스)
+ */
 public class UserServiceImpl implements UserService{
   public static final int MIN_LOGCOUNT_FOR_SILVER = 50;
   public static final int MIN_RECCOMEND_FOR_GOLD = 30;

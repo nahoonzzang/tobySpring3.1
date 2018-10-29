@@ -3,11 +3,13 @@
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+  <!-- 데코레이터 -->
   <bean id="userService" class="com.nahoonzzang.tobyspring.UserServiceTx">
     <property name="transactionManager" ref="transactionManager"/>
-    <property name="userService" ref="userServiceImpl"/>
+    <property name="userService" ref="userServiceImpl"/> <!--DI를 통해 타깃(userServiceImpl)을 다이내믹하게 주입한다. -->
   </bean>
 
+  <!--타깃-->
   <bean id="userServiceImpl" class="com.nahoonzzang.tobyspring.UserServiceImpl">
     <property name="userDao" ref="userDao"/>
     <property name="mailSender" ref="mailSender"/>
